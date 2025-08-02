@@ -46,6 +46,7 @@ Assignment Churn Prediction Project/
 
 
 STEPS TO DO:
+Go to - http://127.0.0.1:8000/docs
 
 API Endpoints
 1. /upload – Dataset Upload & Target Selection
@@ -72,3 +73,9 @@ Provide a target column (e.g., "Churn")
 Upload a test CSV file
 
 Provide a trained model name
+
+Prompt Template used inside genai_utils.py
+
+Analyze the following customer data and explain in one sentence why the model might have predicted churn:
+
+{row_dict}

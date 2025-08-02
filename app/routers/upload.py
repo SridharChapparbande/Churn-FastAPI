@@ -27,9 +27,6 @@ async def upload_dataset(file: UploadFile, target_column: str = Form(...)):
                 content={"error": f"Target column '{target_column}' not found in dataset"}
             )
         
-        #Add target column expicitly for cleaning step
-        df["target"] = df[target_column]
-        
         #Save the uploaded file in data folder for later accessing
         df.to_csv("data/raw_uploaded.csv", index=False)
         

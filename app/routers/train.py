@@ -19,11 +19,11 @@ def train_models(models : list = Body(...,embed=True)):
         # loading the cleaned data from previous step
         df = pd.read_csv("data/cleaned_data.csv")
 
-        if "target" not in df.columns:
+        if "Churn" not in df.columns:
             return JSONResponse(status_code=500, content={"error":"Target column not found in dataset"})
         
-        X = df.drop(columns=["target"])
-        y = df["target"]
+        X = df.drop(columns=["Churn"])
+        y = df["Churn"]
 
         #Splitting the data
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.2, random_state= 10)

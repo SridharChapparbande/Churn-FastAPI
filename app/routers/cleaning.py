@@ -20,12 +20,9 @@ def clean_data(
     try:
         df = pd.read_csv("data/raw_uploaded.csv")
 
-        if "target" in df.columns:
-            target = df["target"]
-            df = df.drop(columns=["target"])
-        else:
-            target = None
-            
+        if "Churn" not in df.columns:
+            return JSONResponse(status_code=400, content={"error": "Target column 'Churn' not found in dataset."})
+
         # Missing value handling
         if missing_handling == "drop":
             df = df.dropna()
@@ -36,37 +33,41 @@ def clean_data(
 
         #Categorical columns handling
         if encoding == "label":
-            label_encoder = {}
+            label_encoders = {}
             for col in df.select_dtypes(include="object").columns:
-                le = LabelEncoder()
-                df[col] = le.fit_transform(df[col])
-                label_encoder[col] = le
-            joblib.dump(label_encoder, "models/label_encoders.pkl")
+                if col != "Churn":
+                    le = LabelEncoder()
+                    df[col] = le.fit_transform(df[col])
+                    label_encoders[col] = le
+            joblib.dump(label_encoders, "models/label_encoders.pkl")
 
         elif encoding == "onehot":
-            df = pd.get_dummies(df)
+            categorical_cols = [col for col in df.select_dtypes(include="object").columns if col != "Churn"]
+            df = pd.get_dummies(df, columns=categorical_cols)
+
 
         # Handling scaling of numerical columns
+        features = df.drop(columns=["Churn"])
         if scaling == "standard":
             scaler = StandardScaler()
         elif scaling == "minmax":
             scaler = MinMaxScaler()
-        
-        df[df.columns] = scaler.fit_transform(df[df.columns])
+
+        scaled_features = scaler.fit_transform(features)
+        df_scaled = pd.DataFrame(scaled_features, columns=features.columns)
+
+        # Add target column back
+        df_scaled["Churn"] = df["Churn"].values[:df_scaled.shape[0]]
+
         joblib.dump(scaler, "models/scaler.pkl")
 
-        # Adding the target variable back to the dataset
-        if target is not None:
-            df['target'] = target.values[:df.shape[0]]
-
-        # Saving the cleaned data
-        df.to_csv(DATA_FILE_PATH, index= False)
+        df_scaled.to_csv(DATA_FILE_PATH, index=False)
 
         return{
             "status" : "success",
-            "shape" : df.shape,
-            "columns" : list(df.columns),
-            "preview" :df.head().to_dict(orient="records")
+            "shape" : df_scaled.shape,
+            "columns" : list(df_scaled.columns),
+            "preview" :df_scaled.head().to_dict(orient="records")
         }
     
     except Exception as e:

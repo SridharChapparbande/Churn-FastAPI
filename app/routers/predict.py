@@ -24,6 +24,9 @@ async def predict_and_explain(file : UploadFile, model_name: str = Form(...)):
         encoder_path = "models/label_encoders.pkl"
         scaler_path = "models/scaler.pkl"
 
+        if "Churn" in df_test.columns:
+            df_test = df_test.drop(columns=["Churn"])
+
         if os.path.exists(encoder_path):
             label_encoders = joblib.load(encoder_path)
             for col in df_test.select_dtypes(include="object").columns:
