@@ -22,6 +22,8 @@ This project is a FastAPI-based machine learning platform designed to predict cu
 - **Google Generative AI (Gemini Pro)** — Natural language explanations
 
 ---
+> Note: The `GEMINI_API_KEY` used during testing will be deleted after submission.  
+> Please generate and use **your own API key** from [Google Generative AI](https://ai.google.dev/) when running this project.
 
 ## 📁 Project Structure
 
