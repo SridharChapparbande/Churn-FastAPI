@@ -15,6 +15,7 @@ def generate_explanation(row_dict):
 
     try:
         response = model.generate_content(prompt)
-        return response.strip()
+        return response.text.strip()
     except Exception as e:
         return f"Failed to generate explanation: {str(e)}"
+
